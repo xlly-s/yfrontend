@@ -4,7 +4,7 @@ async function download() {
   const result = document.getElementById("result");
   result.innerText = "Fetching download link...";
 
-  const res = await fetch("https://your-backend-url/download", {
+  const response = await fetch("https://youtube-production-c250.up.railway.app/download", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ url }),
