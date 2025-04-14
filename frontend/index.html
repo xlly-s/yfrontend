@@ -1,20 +1,53 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Free YouTube video downloader. Download MP4, MP3, and more." />
-  <title>YouTube Downloader</title>
-  <script defer src="app.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <title>YouTube Video Downloader</title>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white p-6 rounded-xl shadow-lg w-full max-w-lg">
-    <h1 class="text-2xl font-bold mb-4">YouTube Downloader</h1>
-    <input id="url" type="text" placeholder="Paste YouTube URL" class="w-full p-2 border rounded mb-4" />
-    <button onclick="download()" class="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700">Download</button>
-    <div id="result" class="mt-4 text-sm text-gray-700"></div>
-  </div>
+<body>
+  <h1>Download YouTube Video</h1>
+  
+  <input type="text" id="videoUrl" placeholder="Paste YouTube URL" />
+  <button onclick="downloadVideo()">Download</button>
+
+  <script>
+    async function downloadVideo() {
+      const urlInput = document.getElementById("videoUrl");
+      const videoUrl = urlInput.value.trim();
+
+      if (!videoUrl) {
+        alert("Please enter a YouTube URL.");
+        return;
+      }
+
+      try {
+        const res = await fetch("https://your-backend.up.railway.app/download", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ url: videoUrl })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          alert("Error: " + (error.error || "Download failed"));
+          return;
+        }
+
+        const blob = await res.blob();
+        const downloadLink = document.createElement("a");
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = "video.mp4";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        downloadLink.remove();
+      } catch (err) {
+        console.error(err);
+        alert("An unexpected error occurred.");
+      }
+    }
+  </script>
 </body>
 </html>
