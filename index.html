@@ -1,13 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2526099586662983"
-     crossorigin="anonymous"></script>
-  <meta name="description" content="Free YouTube video downloader. Save videos in MP4 format easily. In 1080p, and 4k for the best quality. No signup, no spam." />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Free YouTube Video Downloader Online</title>
+  <title>YouTube Downloader</title>
   <style>
     body {
       margin: 0;
@@ -17,9 +13,15 @@
       color: white;
       display: flex;
       flex-direction: column;
+      min-height: 100vh;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      padding: 2rem 1rem;
     }
 
     .container {
@@ -95,26 +97,107 @@
       0%, 100% { opacity: 0.4; }
       50% { opacity: 1; }
     }
+
+    footer {
+      background-color: #1a1a1a;
+      padding: 2rem 1rem;
+      color: #ccc;
+      font-size: 14px;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .footer-container {
+      max-width: 1000px;
+      margin: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .footer-section {
+      flex: 1 1 200px;
+      margin: 10px;
+    }
+
+    .footer-section h4 {
+      color: #fff;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 6px;
+    }
+
+    .footer-section ul li a {
+      color: #ccc;
+      text-decoration: none;
+    }
+
+    .footer-section ul li a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      margin-top: 1rem;
+      color: #777;
+      font-size: 13px;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>YouTube Downloader</h1>
-    <input type="text" id="videoUrl" placeholder="Paste YouTube URL..." />
-  <button onclick="downloadVideo()">Download</button>
 
-  <p style="font-size: 14px; color: #aaa; margin-top: 0.5rem; text-align: center;">
-    📥 Downloads in the best available quality automatically.<br />
-    ⏳ If the progress bar looks stuck, it's still downloading — hang tight!
-  </p>
+  <main>
+    <div class="container">
+      <h1>YouTube Downloader</h1>
+      <input type="text" id="videoUrl" placeholder="Paste YouTube URL..." />
+      <button onclick="downloadVideo()">Download</button>
 
+      <p style="font-size: 14px; color: #aaa; margin-top: 0.5rem; text-align: center;">
+        📥 Downloads in the best available quality automatically.<br />
+        ⏳ If the progress bar looks stuck, it's still downloading — hang tight!
+      </p>
 
-    <div class="progress-container">
-      <div class="progress-bar" id="progressBar"></div>
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <div class="status" id="statusMessage"></div>
     </div>
+  </main>
 
-    <div class="status" id="statusMessage"></div>
-  </div>
+  <footer>
+    <div class="footer-container">
+      <div class="footer-section">
+        <h4>Disclaimer</h4>
+        <p>YTDownHub  is an independent tool and is not affiliated with YouTube. Use it responsibly and respect content creators' rights.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Pages</h4>
+        <ul>
+          <li><a href="/faq">F.A.Q.</a></li>
+          <li><a href="/contact">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="/privacy-policy">Privacy Policy</a></li>
+          <li><a href="/terms-of-service">Terms of Service</a></li>
+        </ul>
+      </div>
+
+    </div>
+    <div class="footer-bottom">
+      © 2025 YTDownHub.com - All Rights Reserved.
+    </div>
+  </footer>
 
   <script>
     async function downloadVideo() {
@@ -185,5 +268,7 @@
       }
     }
   </script>
+
 </body>
 </html>
+
