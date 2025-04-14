@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frequently Asked Questions - YTDownHub</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      background: #1e1e1e;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      width: 90%;
+      max-width: 800px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #00ffcc;
+    }
+
+    h2 {
+      color: #00ccaa;
+      margin-top: 1.5rem;
+      font-size: 1.3rem;
+      border-bottom: 1px solid #333;
+      padding-bottom: 0.5rem;
+    }
+
+    .faq-item {
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      font-weight: bold;
+      color: #00ffcc;
+      padding: 12px 15px;
+      background: #2a2a2a;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .faq-question:hover {
+      background: #333;
+    }
+
+    .faq-question::after {
+      content: '+';
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+
+    .faq-question.active::after {
+      content: '-';
+    }
+
+    .faq-answer {
+      color: #ccc;
+      line-height: 1.6;
+      padding: 0 15px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      border-left: 2px solid transparent;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 500px;
+      padding: 15px;
+      border-left-color: #00ffcc;
+    }
+
+    a {
+      color: #00ffcc;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      background-color: #1a1a1a;
+      padding: 2rem 1rem;
+      color: #ccc;
+      font-size: 14px;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .footer-container {
+      max-width: 1000px;
+      margin: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .footer-section {
+      flex: 1 1 200px;
+      margin: 10px;
+    }
+
+    .footer-section h4 {
+      color: #fff;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 6px;
+    }
+
+    .footer-section ul li a {
+      color: #ccc;
+      text-decoration: none;
+    }
+
+    .footer-section ul li a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      margin-top: 1rem;
+      color: #777;
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 1.5rem;
+      }
+      
+      .faq-question {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+      }
+      
+      .faq-answer {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <div class="container">
+      <h1>Frequently Asked Questions</h1>
+      
+      <div class="faq-item">
+        <div class="faq-question">1. What is YTDownHub?</div>
+        <div class="faq-answer">
+          YTDownHub is a free online tool that allows you to download videos from YouTube in various formats and qualities. You can save videos as MP4 (video), MP3 (audio), or other available formats.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">2. Is YTDownHub free to use?</div>
+        <div class="faq-answer">
+          Yes, YTDownHub is completely free to use with no hidden charges. We may display ads to support the service, but there are no premium features or paywalls.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">3. How do I download YouTube videos?</div>
+        <div class="faq-answer">
+          Simply paste the YouTube video URL into the input field on our homepage and click "Download". Then select your preferred format and quality, and the download will start automatically.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">4. What video qualities are available?</div>
+        <div class="faq-answer">
+          Available qualities depend on the original video, but typically include:
+          <ul>
+            <li>144p, 240p, 360p, 480p (SD)</li>
+            <li>720p (HD)</li>
+            <li>1080p (Full HD)</li>
+            <li>4K (when available)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">5. Can I download just the audio?</div>
+        <div class="faq-answer">
+          Yes! Choose the MP3 format to download only the audio track. We offer various bitrates for optimal quality.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">6. Is this service legal?</div>
+        <div class="faq-answer">
+          YTDownHub operates as an independent tool. The legality of downloading YouTube videos depends on your local laws and how you use the content. We encourage users to respect copyright laws and only download videos they have rights to or for personal use under fair use provisions.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">7. Why does my download fail sometimes?</div>
+        <div class="faq-answer">
+          Download failures can occur due to:
+          <ul>
+            <li>Invalid or private YouTube URLs</li>
+            <li>Server overload during peak times</li>
+            <li>Network connectivity issues</li>
+            <li>YouTube API changes</li>
+          </ul>
+          Try refreshing the page or checking the URL if this happens.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">8. Do you keep copies of downloaded videos?</div>
+        <div class="faq-answer">
+          No, YTDownHub does not store any downloaded content on our servers. Videos are processed in real-time and delivered directly to your device.
+        </div>
+      </div>
+
+      <h2>Still need help?</h2>
+      <p>Contact us at <a href="mailto:admin@ytdownhub.com">admin@ytdownhub.com</a> for any additional questions.</p>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-section">
+        <h4>Disclaimer</h4>
+        <p>YTDownHub is an independent tool and is not affiliated with YouTube. Use it responsibly and respect content creators' rights.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Pages</h4>
+        <ul>
+          <li><a href="https://ytdownhub.com">Home</a></li>
+          <li><a href="/faq">F.A.Q.</a></li>
+          <li><a href="mailto:admin@ytdownhub.com">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="https://ytdownhub.com/privacy-policy">Privacy Policy</a></li>
+          <li><a href="https://ytdownhub.com/terms-of-service">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2025 YTDownHub.com - All Rights Reserved.
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const faqItems = document.querySelectorAll('.faq-item');
+      
+      faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        
+        question.addEventListener('click', () => {
+          // Close all other items
+          faqItems.forEach(otherItem => {
+            if (otherItem !== item && otherItem.classList.contains('active')) {
+              otherItem.classList.remove('active');
+              otherItem.querySelector('.faq-question').classList.remove('active');
+            }
+          });
+          
+          // Toggle current item
+          item.classList.toggle('active');
+          question.classList.toggle('active');
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
