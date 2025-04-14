@@ -9,179 +9,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Free YouTube Video Downloader Online</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #121212;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-
-    .container {
-      background: #1e1e1e;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-      width: 90%;
-      max-width: 500px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 1rem;
-      color: #00ffcc;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      font-size: 16px;
-      margin-bottom: 1rem;
-      background: #2a2a2a;
-      color: white;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #00ffcc;
-      color: #121212;
-      font-weight: bold;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #00ccaa;
-    }
-
-    .progress-container {
-      margin-top: 1rem;
-      height: 8px;
-      background: #333;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      width: 0%;
-      height: 100%;
-      background: #00ffcc;
-      transition: width 0.4s ease;
-    }
-
-    .status {
-      margin-top: 1rem;
-      text-align: center;
-      min-height: 24px;
-    }
-
-    .loading {
-      animation: blink 1s infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 1; }
-    }
+    /* Basic styling for progress bar and layout */
+    body { font-family: Arial, sans-serif; text-align: center; padding: 2rem; }
+    input[type="text"] { padding: 0.5rem; width: 60%; }
+    button { padding: 0.5rem 1rem; margin-top: 1rem; }
+    #progressBox { display: none; margin-top: 1rem; height: 20px; width: 100%; background: #eee; }
+    #progressBar { height: 100%; width: 0; background: #4caf50; transition: width 0.5s; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>YouTube Downloader</h1>
-    <input type="text" id="videoUrl" placeholder="Paste YouTube URL..." />
+
+  <h1>🎬 YouTube Downloader</h1>
+  <p>Auto downloads in best quality. If the progress bar looks stuck, it isn’t!</p>
+
+  <input type="text" id="urlInput" placeholder="Enter YouTube URL">
+  <br>
   <button onclick="downloadVideo()">Download</button>
 
-  <p style="font-size: 14px; color: #aaa; margin-top: 0.5rem; text-align: center;">
-    📥 Downloads in the best available quality automatically.<br />
-    ⏳ If the progress bar looks stuck, it's still downloading — hang tight!
-  </p>
-
-
-    <div class="progress-container">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
-
-    <div class="status" id="statusMessage"></div>
+  <div id="progressBox">
+    <div id="progressBar"></div>
   </div>
 
+  <p id="result"></p>
+
+  <!-- 👇 JavaScript goes here -->
   <script>
     async function downloadVideo() {
-      const urlInput = document.getElementById("videoUrl");
-      const status = document.getElementById("statusMessage");
-      const progress = document.getElementById("progressBar");
+      const url = document.getElementById('urlInput').value;
+      const result = document.getElementById('result');
+      const progressBox = document.getElementById('progressBox');
+      const progressBar = document.getElementById('progressBar');
 
-      const videoUrl = urlInput.value.trim();
-      if (!videoUrl) {
-        status.textContent = "Please enter a YouTube URL.";
+      if (!url) {
+        alert("Please enter a URL.");
         return;
       }
 
-      status.textContent = "Starting download...";
-      status.classList.add("loading");
-      progress.style.width = "10%";
+      result.innerHTML = "";
+      progressBox.style.display = "block";
+      progressBar.style.width = "10%";
 
       try {
-        const res = await fetch("https://youtube-production-c250.up.railway.app/download", {
+        const response = await fetch("https://your-railway-url.com/download", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ url: videoUrl })
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url })
         });
 
-        if (!res.ok) {
-          const error = await res.json();
-          status.textContent = "❌ " + (error.error || "Download failed.");
-          progress.style.width = "0%";
-          status.classList.remove("loading");
-          return;
+        if (!response.ok) throw new Error("Server error. Please try again.");
+
+        const data = await response.json();
+        if (data.url) {
+          progressBar.style.width = "80%";
+
+          const link = document.createElement("a");
+          link.href = data.url;
+          link.download = `${data.title || 'video'}.mp4`;
+          link.target = "_blank";
+          link.click();
+
+          progressBar.style.width = "100%";
+          result.innerHTML = `✅ Download started: <strong>${data.title}</strong>`;
+        } else {
+          throw new Error("Download link not found.");
         }
-
-        const contentLength = res.headers.get("content-length");
-        const total = parseInt(contentLength, 10);
-        let loaded = 0;
-
-        const reader = res.body.getReader();
-        const chunks = [];
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          chunks.push(value);
-          loaded += value.length;
-          if (total) {
-            const percent = Math.floor((loaded / total) * 100);
-            progress.style.width = percent + "%";
-          }
-        }
-
-        const blob = new Blob(chunks, { type: "video/mp4" });
-        const downloadLink = document.createElement("a");
-        downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = "video.mp4";
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        downloadLink.remove();
-
-        status.textContent = "✅ Download complete!";
-        progress.style.width = "100%";
       } catch (err) {
-        console.error(err);
-        status.textContent = "❌ An error occurred during download.";
-        progress.style.width = "0%";
-      } finally {
-        status.classList.remove("loading");
+        result.innerHTML = "❌ Error: " + err.message;
+        progressBar.style.width = "0%";
       }
     }
   </script>
