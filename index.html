@@ -131,6 +131,15 @@
       color: white;
     }
 
+    .quality-badge {
+      font-size: 10px;
+      background: #00ffcc;
+      color: #121212;
+      padding: 2px 4px;
+      border-radius: 4px;
+      margin-left: 5px;
+    }
+
     @keyframes blink {
       0%, 100% { opacity: 0.4; }
       50% { opacity: 1; }
@@ -271,7 +280,7 @@
       progress.style.width = "10%";
 
       try {
-        const res = await fetch("https://youtube-production-c250.up.railway.app/get-formats", {
+        const res = await fetch("/get-formats", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -293,8 +302,11 @@
         formats.forEach(format => {
           const btn = document.createElement("button");
           btn.className = "quality-btn";
-          btn.textContent = format.quality;
-          btn.onclick = () => downloadVideo(format.itag, format.quality);
+          btn.innerHTML = format.quality;
+          if (format.type === 'video') {
+            btn.innerHTML += '<span class="quality-badge">VIDEO ONLY</span>';
+          }
+          btn.onclick = () => downloadVideo(format.itag, format.quality, format.type === 'video');
           qualityButtons.appendChild(btn);
         });
         
@@ -311,7 +323,7 @@
       }
     }
 
-    async function downloadVideo(itag, quality) {
+    async function downloadVideo(itag, quality, isVideoOnly) {
       const urlInput = document.getElementById("videoUrl");
       const status = document.getElementById("statusMessage");
       const progress = document.getElementById("progressBar");
@@ -322,14 +334,15 @@
       progress.style.width = "10%";
 
       try {
-        const res = await fetch("https://youtube-production-c250.up.railway.app/download", {
+        const res = await fetch("/download", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({ 
             url: videoUrl,
-            itag: itag
+            itag: itag,
+            quality: quality
           })
         });
 
@@ -352,19 +365,29 @@
           if (total) {
             const percent = Math.floor((loaded / total) * 100);
             progress.style.width = percent + "%";
+            status.textContent = `Downloading ${quality}... (${percent}%)`;
           }
         }
 
         const blob = new Blob(chunks, { type: "video/mp4" });
         const downloadLink = document.createElement("a");
         downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = `ytdownhub-${quality}.mp4`;
+        
+        // Create a clean filename
+        let cleanQuality = quality.replace(' (video only)', '').replace('p', '');
+        downloadLink.download = `yt-video-${cleanQuality}.mp4`;
+        
         document.body.appendChild(downloadLink);
         downloadLink.click();
         downloadLink.remove();
 
         status.textContent = `✅ ${quality} download complete!`;
         progress.style.width = "100%";
+        
+        // Reset progress bar after 3 seconds
+        setTimeout(() => {
+          progress.style.width = "0%";
+        }, 3000);
       } catch (err) {
         console.error(err);
         status.textContent = "❌ " + err.message;
