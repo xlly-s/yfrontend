@@ -97,9 +97,48 @@
       animation: blink 1s infinite;
     }
 
+    .quality-options {
+      display: none;
+      margin-top: 1rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .quality-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .quality-btn {
+      padding: 10px;
+      background-color: #2a2a2a;
+      border: 1px solid #00ffcc;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .quality-btn:hover {
+      background-color: #00ffcc;
+      color: #121212;
+    }
+
+    .quality-btn.selected {
+      background-color: #00ccaa;
+      color: white;
+    }
+
     @keyframes blink {
       0%, 100% { opacity: 0.4; }
       50% { opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     footer {
@@ -153,6 +192,12 @@
       color: #777;
       font-size: 13px;
     }
+
+    @media (max-width: 480px) {
+      .quality-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -161,11 +206,16 @@
     <div class="container">
       <h1>YouTube Downloader</h1>
       <input type="text" id="videoUrl" placeholder="Paste YouTube URL..." />
-      <button onclick="downloadVideo()">Download</button>
+      <button onclick="getVideoInfo()">Get Download Options</button>
+
+      <div id="qualityOptions" class="quality-options">
+        <h3 style="color: #00ccaa; margin-bottom: 10px;">Available Qualities:</h3>
+        <div class="quality-grid" id="qualityButtons"></div>
+      </div>
 
       <p style="font-size: 14px; color: #aaa; margin-top: 0.5rem; text-align: center;">
-        📥 Downloads in the best available quality automatically.<br />
-        ⏳ If the progress bar looks stuck, it's still downloading — hang tight!
+        📥 Select your preferred quality after pasting URL<br />
+        ⏳ Higher resolutions may take longer to process
       </p>
 
       <div class="progress-container">
@@ -180,7 +230,7 @@
     <div class="footer-container">
       <div class="footer-section">
         <h4>Disclaimer</h4>
-        <p>YTDownHub  is an independent tool and is not affiliated with YouTube. Use it responsibly and respect content creators' rights.</p>
+        <p>YTDownHub is an independent tool and is not affiliated with YouTube. Use it responsibly and respect content creators' rights.</p>
       </div>
       <div class="footer-section">
         <h4>Pages</h4>
@@ -196,7 +246,6 @@
           <li><a href="/terms-of-service">Terms of Service</a></li>
         </ul>
       </div>
-
     </div>
     <div class="footer-bottom">
       © 2025 YTDownHub.com - All Rights Reserved.
@@ -204,10 +253,12 @@
   </footer>
 
   <script>
-    async function downloadVideo() {
+    async function getVideoInfo() {
       const urlInput = document.getElementById("videoUrl");
       const status = document.getElementById("statusMessage");
       const progress = document.getElementById("progressBar");
+      const qualityOptions = document.getElementById("qualityOptions");
+      const qualityButtons = document.getElementById("qualityButtons");
 
       const videoUrl = urlInput.value.trim();
       if (!videoUrl) {
@@ -215,12 +266,12 @@
         return;
       }
 
-      status.textContent = "Starting download...";
+      status.textContent = "Fetching video information...";
       status.classList.add("loading");
       progress.style.width = "10%";
 
       try {
-        const res = await fetch("https://youtube-production-c250.up.railway.app/download", {
+        const res = await fetch("https://youtube-production-c250.up.railway.app/get-formats", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -230,10 +281,61 @@
 
         if (!res.ok) {
           const error = await res.json();
-          status.textContent = "❌ " + (error.error || "Download failed.");
-          progress.style.width = "0%";
-          status.classList.remove("loading");
-          return;
+          throw new Error(error.error || "Failed to fetch video formats");
+        }
+
+        const formats = await res.json();
+        
+        // Clear previous options
+        qualityButtons.innerHTML = "";
+        
+        // Add quality options
+        formats.forEach(format => {
+          const btn = document.createElement("button");
+          btn.className = "quality-btn";
+          btn.textContent = format.quality;
+          btn.onclick = () => downloadVideo(format.itag, format.quality);
+          qualityButtons.appendChild(btn);
+        });
+        
+        qualityOptions.style.display = "block";
+        status.textContent = "Select your preferred quality:";
+        progress.style.width = "0%";
+        
+      } catch (err) {
+        console.error(err);
+        status.textContent = "❌ " + err.message;
+        progress.style.width = "0%";
+      } finally {
+        status.classList.remove("loading");
+      }
+    }
+
+    async function downloadVideo(itag, quality) {
+      const urlInput = document.getElementById("videoUrl");
+      const status = document.getElementById("statusMessage");
+      const progress = document.getElementById("progressBar");
+
+      const videoUrl = urlInput.value.trim();
+      status.textContent = `Preparing ${quality} download...`;
+      status.classList.add("loading");
+      progress.style.width = "10%";
+
+      try {
+        const res = await fetch("https://youtube-production-c250.up.railway.app/download", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ 
+            url: videoUrl,
+            itag: itag
+          })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || "Download failed");
         }
 
         const contentLength = res.headers.get("content-length");
@@ -256,23 +358,21 @@
         const blob = new Blob(chunks, { type: "video/mp4" });
         const downloadLink = document.createElement("a");
         downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = "video.mp4";
+        downloadLink.download = `ytdownhub-${quality}.mp4`;
         document.body.appendChild(downloadLink);
         downloadLink.click();
         downloadLink.remove();
 
-        status.textContent = "✅ Download complete!";
+        status.textContent = `✅ ${quality} download complete!`;
         progress.style.width = "100%";
       } catch (err) {
         console.error(err);
-        status.textContent = "❌ An error occurred during download.";
+        status.textContent = "❌ " + err.message;
         progress.style.width = "0%";
       } finally {
         status.classList.remove("loading");
       }
     }
   </script>
-
 </body>
 </html>
-
