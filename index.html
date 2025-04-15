@@ -1,267 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2526099586662983"
-     crossorigin="anonymous"></script>
-  <meta name="description" content="Free YouTube video downloader. Save videos in MP4 format easily. In 1080p, and 4k for the best quality. No signup, no spam." />
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Free YouTube Video Downloader Online</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #121212;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem 1rem;
-    }
-
-    .container {
-      background: #1e1e1e;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-      width: 90%;
-      max-width: 500px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 1rem;
-      color: #00ffcc;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      font-size: 16px;
-      margin-bottom: 1rem;
-      background: #2a2a2a;
-      color: white;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #00ffcc;
-      color: #121212;
-      font-weight: bold;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #00ccaa;
-    }
-
-    .progress-container {
-      margin-top: 1rem;
-      height: 8px;
-      background: #333;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      width: 0%;
-      height: 100%;
-      background: #00ffcc;
-      transition: width 0.4s ease;
-    }
-
-    .status {
-      margin-top: 1rem;
-      text-align: center;
-      min-height: 24px;
-    }
-
-    .loading {
-      animation: blink 1s infinite;
-    }
-
-    .quality-options {
-      display: none;
-      margin-top: 1rem;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .quality-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .quality-btn {
-      padding: 10px;
-      background-color: #2a2a2a;
-      border: 1px solid #00ffcc;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-align: center;
-    }
-
-    .quality-btn:hover {
-      background-color: #00ffcc;
-      color: #121212;
-    }
-
-    .quality-btn.selected {
-      background-color: #00ccaa;
-      color: white;
-    }
-
-    .quality-badge {
-      font-size: 10px;
-      background: #00ffcc;
-      color: #121212;
-      padding: 2px 4px;
-      border-radius: 4px;
-      margin-left: 5px;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 1; }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    footer {
-      background-color: #1a1a1a;
-      padding: 2rem 1rem;
-      color: #ccc;
-      font-size: 14px;
-      border-top: 1px solid #2a2a2a;
-    }
-
-    .footer-container {
-      max-width: 1000px;
-      margin: auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-
-    .footer-section {
-      flex: 1 1 200px;
-      margin: 10px;
-    }
-
-    .footer-section h4 {
-      color: #fff;
-      margin-bottom: 10px;
-      font-size: 15px;
-    }
-
-    .footer-section ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .footer-section ul li {
-      margin-bottom: 6px;
-    }
-
-    .footer-section ul li a {
-      color: #ccc;
-      text-decoration: none;
-    }
-
-    .footer-section ul li a:hover {
-      text-decoration: underline;
-    }
-
-    .footer-bottom {
-      text-align: center;
-      margin-top: 1rem;
-      color: #777;
-      font-size: 13px;
-    }
-
-    @media (max-width: 480px) {
-      .quality-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-</head>
-<body>
-
-  <main>
-    <div class="container">
-      <h1>YouTube Downloader</h1>
-      <input type="text" id="videoUrl" placeholder="Paste YouTube URL..." />
-      <button onclick="getVideoInfo()">Get Download Options</button>
-
-      <div id="qualityOptions" class="quality-options">
-        <h3 style="color: #00ccaa; margin-bottom: 10px;">Available Qualities:</h3>
-        <div class="quality-grid" id="qualityButtons"></div>
-      </div>
-
-      <p style="font-size: 14px; color: #aaa; margin-top: 0.5rem; text-align: center;">
-        📥 Select your preferred quality after pasting URL<br />
-        ⏳ Higher resolutions may take longer to process
-      </p>
-
-      <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
-      </div>
-
-      <div class="status" id="statusMessage"></div>
-    </div>
-  </main>
-
-  <footer>
-    <div class="footer-container">
-      <div class="footer-section">
-        <h4>Disclaimer</h4>
-        <p>YTDownHub is an independent tool and is not affiliated with YouTube. Use it responsibly and respect content creators' rights.</p>
-      </div>
-      <div class="footer-section">
-        <h4>Pages</h4>
-        <ul>
-          <li><a href="/faq">F.A.Q.</a></li>
-          <li><a href="mailto:admin@ytdownhub.com">Contact Us</a></li>
-        </ul>
-      </div>
-      <div class="footer-section">
-        <h4>Legal</h4>
-        <ul>
-          <li><a href="/privacy-policy">Privacy Policy</a></li>
-          <li><a href="/terms-of-service">Terms of Service</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      © 2025 YTDownHub.com - All Rights Reserved.
-    </div>
-  </footer>
-
-  <script>
+<script>
     async function getVideoInfo() {
       const urlInput = document.getElementById("videoUrl");
       const status = document.getElementById("statusMessage");
@@ -288,18 +25,24 @@
           body: JSON.stringify({ url: videoUrl })
         });
 
-        if (!res.ok) {
-          const error = await res.json();
-          throw new Error(error.error || "Failed to fetch video formats");
+        // First check if response is JSON
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          const text = await res.text();
+          throw new Error(text || "Server returned non-JSON response");
         }
 
-        const formats = await res.json();
+        const data = await res.json();
         
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to fetch video formats");
+        }
+
         // Clear previous options
         qualityButtons.innerHTML = "";
         
         // Add quality options
-        formats.forEach(format => {
+        data.forEach(format => {
           const btn = document.createElement("button");
           btn.className = "quality-btn";
           btn.innerHTML = format.quality;
@@ -315,8 +58,8 @@
         progress.style.width = "0%";
         
       } catch (err) {
-        console.error(err);
-        status.textContent = "❌ " + err.message;
+        console.error("Error:", err);
+        status.textContent = "❌ " + (err.message || "Failed to process request");
         progress.style.width = "0%";
       } finally {
         status.classList.remove("loading");
@@ -346,13 +89,20 @@
           })
         });
 
+        // First check if response is JSON (error case)
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Download failed");
+        }
+
+        // If not JSON, it should be the video file
         if (!res.ok) {
-          const error = await res.json();
-          throw new Error(error.error || "Download failed");
+          throw new Error(`Server returned status ${res.status}`);
         }
 
         const contentLength = res.headers.get("content-length");
-        const total = parseInt(contentLength, 10);
+        const total = parseInt(contentLength, 10) || 0;
         let loaded = 0;
 
         const reader = res.body.getReader();
@@ -389,13 +139,11 @@
           progress.style.width = "0%";
         }, 3000);
       } catch (err) {
-        console.error(err);
-        status.textContent = "❌ " + err.message;
+        console.error("Download error:", err);
+        status.textContent = "❌ " + (err.message || "Download failed");
         progress.style.width = "0%";
       } finally {
         status.classList.remove("loading");
       }
     }
-  </script>
-</body>
-</html>
+</script>
