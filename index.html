@@ -261,155 +261,155 @@
     </div>
   </footer>
 
+
   <script>
-<script>
-    async function getVideoInfo() {
-      const urlInput = document.getElementById("videoUrl");
-      const status = document.getElementById("statusMessage");
-      const progress = document.getElementById("progressBar");
-      const qualityOptions = document.getElementById("qualityOptions");
-      const qualityButtons = document.getElementById("qualityButtons");
-
-      const videoUrl = urlInput.value.trim();
-      if (!videoUrl) {
-        status.textContent = "Please enter a YouTube URL.";
-        return;
-      }
-
-      status.textContent = "Fetching video information...";
-      status.classList.add("loading");
-      progress.style.width = "10%";
-
-      try {
-        const res = await fetch("/get-formats", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ url: videoUrl })
-        });
-
-        // First check if response is JSON
-        const contentType = res.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          const text = await res.text();
-          throw new Error(text || "Server returned non-JSON response");
+      async function getVideoInfo() {
+        const urlInput = document.getElementById("videoUrl");
+        const status = document.getElementById("statusMessage");
+        const progress = document.getElementById("progressBar");
+        const qualityOptions = document.getElementById("qualityOptions");
+        const qualityButtons = document.getElementById("qualityButtons");
+  
+        const videoUrl = urlInput.value.trim();
+        if (!videoUrl) {
+          status.textContent = "Please enter a YouTube URL.";
+          return;
         }
-
-        const data = await res.json();
-        
-        if (!res.ok) {
-          throw new Error(data.error || "Failed to fetch video formats");
-        }
-
-        // Clear previous options
-        qualityButtons.innerHTML = "";
-        
-        // Add quality options
-        data.forEach(format => {
-          const btn = document.createElement("button");
-          btn.className = "quality-btn";
-          btn.innerHTML = format.quality;
-          if (format.type === 'video') {
-            btn.innerHTML += '<span class="quality-badge">VIDEO ONLY</span>';
+  
+        status.textContent = "Fetching video information...";
+        status.classList.add("loading");
+        progress.style.width = "10%";
+  
+        try {
+          const res = await fetch("/get-formats", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ url: videoUrl })
+          });
+  
+          // First check if response is JSON
+          const contentType = res.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            const text = await res.text();
+            throw new Error(text || "Server returned non-JSON response");
           }
-          btn.onclick = () => downloadVideo(format.itag, format.quality, format.type === 'video');
-          qualityButtons.appendChild(btn);
-        });
-        
-        qualityOptions.style.display = "block";
-        status.textContent = "Select your preferred quality:";
-        progress.style.width = "0%";
-        
-      } catch (err) {
-        console.error("Error:", err);
-        status.textContent = "❌ " + (err.message || "Failed to process request");
-        progress.style.width = "0%";
-      } finally {
-        status.classList.remove("loading");
-      }
-    }
-
-    async function downloadVideo(itag, quality, isVideoOnly) {
-      const urlInput = document.getElementById("videoUrl");
-      const status = document.getElementById("statusMessage");
-      const progress = document.getElementById("progressBar");
-
-      const videoUrl = urlInput.value.trim();
-      status.textContent = `Preparing ${quality} download...`;
-      status.classList.add("loading");
-      progress.style.width = "10%";
-
-      try {
-        const res = await fetch("/download", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ 
-            url: videoUrl,
-            itag: itag,
-            quality: quality
-          })
-        });
-
-        // First check if response is JSON (error case)
-        const contentType = res.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await res.json();
-          throw new Error(errorData.error || "Download failed");
-        }
-
-        // If not JSON, it should be the video file
-        if (!res.ok) {
-          throw new Error(`Server returned status ${res.status}`);
-        }
-
-        const contentLength = res.headers.get("content-length");
-        const total = parseInt(contentLength, 10) || 0;
-        let loaded = 0;
-
-        const reader = res.body.getReader();
-        const chunks = [];
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          chunks.push(value);
-          loaded += value.length;
-          if (total) {
-            const percent = Math.floor((loaded / total) * 100);
-            progress.style.width = percent + "%";
-            status.textContent = `Downloading ${quality}... (${percent}%)`;
+  
+          const data = await res.json();
+          
+          if (!res.ok) {
+            throw new Error(data.error || "Failed to fetch video formats");
           }
-        }
-
-        const blob = new Blob(chunks, { type: "video/mp4" });
-        const downloadLink = document.createElement("a");
-        downloadLink.href = URL.createObjectURL(blob);
-        
-        // Create a clean filename
-        let cleanQuality = quality.replace(' (video only)', '').replace('p', '');
-        downloadLink.download = `yt-video-${cleanQuality}.mp4`;
-        
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        downloadLink.remove();
-
-        status.textContent = `✅ ${quality} download complete!`;
-        progress.style.width = "100%";
-        
-        // Reset progress bar after 3 seconds
-        setTimeout(() => {
+  
+          // Clear previous options
+          qualityButtons.innerHTML = "";
+          
+          // Add quality options
+          data.forEach(format => {
+            const btn = document.createElement("button");
+            btn.className = "quality-btn";
+            btn.innerHTML = format.quality;
+            if (format.type === 'video') {
+              btn.innerHTML += '<span class="quality-badge">VIDEO ONLY</span>';
+            }
+            btn.onclick = () => downloadVideo(format.itag, format.quality, format.type === 'video');
+            qualityButtons.appendChild(btn);
+          });
+          
+          qualityOptions.style.display = "block";
+          status.textContent = "Select your preferred quality:";
           progress.style.width = "0%";
-        }, 3000);
-      } catch (err) {
-        console.error("Download error:", err);
-        status.textContent = "❌ " + (err.message || "Download failed");
-        progress.style.width = "0%";
-      } finally {
-        status.classList.remove("loading");
+          
+        } catch (err) {
+          console.error("Error:", err);
+          status.textContent = "❌ " + (err.message || "Failed to process request");
+          progress.style.width = "0%";
+        } finally {
+          status.classList.remove("loading");
+        }
       }
-    }
-</script>
+  
+      async function downloadVideo(itag, quality, isVideoOnly) {
+        const urlInput = document.getElementById("videoUrl");
+        const status = document.getElementById("statusMessage");
+        const progress = document.getElementById("progressBar");
+  
+        const videoUrl = urlInput.value.trim();
+        status.textContent = `Preparing ${quality} download...`;
+        status.classList.add("loading");
+        progress.style.width = "10%";
+  
+        try {
+          const res = await fetch("/download", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ 
+              url: videoUrl,
+              itag: itag,
+              quality: quality
+            })
+          });
+  
+          // First check if response is JSON (error case)
+          const contentType = res.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || "Download failed");
+          }
+  
+          // If not JSON, it should be the video file
+          if (!res.ok) {
+            throw new Error(`Server returned status ${res.status}`);
+          }
+  
+          const contentLength = res.headers.get("content-length");
+          const total = parseInt(contentLength, 10) || 0;
+          let loaded = 0;
+  
+          const reader = res.body.getReader();
+          const chunks = [];
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            loaded += value.length;
+            if (total) {
+              const percent = Math.floor((loaded / total) * 100);
+              progress.style.width = percent + "%";
+              status.textContent = `Downloading ${quality}... (${percent}%)`;
+            }
+          }
+  
+          const blob = new Blob(chunks, { type: "video/mp4" });
+          const downloadLink = document.createElement("a");
+          downloadLink.href = URL.createObjectURL(blob);
+          
+          // Create a clean filename
+          let cleanQuality = quality.replace(' (video only)', '').replace('p', '');
+          downloadLink.download = `yt-video-${cleanQuality}.mp4`;
+          
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          downloadLink.remove();
+  
+          status.textContent = `✅ ${quality} download complete!`;
+          progress.style.width = "100%";
+          
+          // Reset progress bar after 3 seconds
+          setTimeout(() => {
+            progress.style.width = "0%";
+          }, 3000);
+        } catch (err) {
+          console.error("Download error:", err);
+          status.textContent = "❌ " + (err.message || "Download failed");
+          progress.style.width = "0%";
+        } finally {
+          status.classList.remove("loading");
+        }
+      }
+  </script>
 </body>
 </html>
